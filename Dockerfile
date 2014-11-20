@@ -6,7 +6,7 @@ ENV REFRESHED_AT 2014-10-21
 
 # PHP
 RUN apt-get install -y supervisor php5-cli php5-curl php5-fpm php5-gd php5-mcrypt php5-mysql
-
+RUN php5enmod mcrypt
 
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /etc/nginx
@@ -26,14 +26,12 @@ COPY docker/start.sh /start.sh
 
 RUN sed -i "s/;daemonize.*/daemonize = no/g" /etc/php5/fpm/php-fpm.conf
 
-VOLUME /data
-
-EXPOSE 80
 RUN apt-get install -y python-setuptools
 # Keep upstart from complaining
 RUN dpkg-divert --local --rename --add /sbin/initctl
 RUN ln -sf /bin/true /sbin/initctl
 RUN /usr/bin/easy_install supervisor-stdout
 
+EXPOSE 80
+
 ENTRYPOINT ["/start.sh"]
-# Tie it all together with supervisord
